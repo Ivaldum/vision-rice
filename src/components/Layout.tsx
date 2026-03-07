@@ -1,9 +1,12 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Camera, History, Sprout } from 'lucide-react';
+import { Camera, History, Sprout, LogOut } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { useAuth } from '../context/AuthContext';
 
 export const Layout: React.FC = () => {
+    const { user, signOut } = useAuth();
+
     return (
         <div className="dashboard-layout">
             <nav className="sidebar">
@@ -32,13 +35,39 @@ export const Layout: React.FC = () => {
                     <span className="hidden md:inline font-medium">Historial</span>
                     <span className="md:hidden text-[10px] font-bold mt-1">HISTORIAL</span>
                 </NavLink>
-                <div className="hidden md:block mt-auto px-4 py-4 bg-green-50 rounded-xl w-full">
-                    <p className="text-xs text-green-800 font-bold mb-1">Estado del Sistema</p>
-                    <div className="flex items-center gap-2 text-xs text-green-600">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        Online v2.0
+
+                {/* User + Logout */}
+                <div className="hidden md:flex flex-col gap-2 mt-auto w-full">
+                    <div className="px-4 py-3 bg-green-50 rounded-xl w-full">
+                        <p className="text-xs text-green-800 font-bold mb-1">Estado del Sistema</p>
+                        <div className="flex items-center gap-2 text-xs text-green-600">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                            Online v2.0
+                        </div>
                     </div>
+                    {user && (
+                        <div className="px-4 py-3 bg-white border border-green-100 rounded-xl w-full">
+                            <p className="text-xs text-green-500 font-medium truncate mb-2">{user.email}</p>
+                            <button
+                                onClick={signOut}
+                                className="flex items-center gap-2 text-xs text-red-500 hover:text-red-700 font-semibold transition-colors"
+                            >
+                                <LogOut className="w-3.5 h-3.5" />
+                                Cerrar sesión
+                            </button>
+                        </div>
+                    )}
                 </div>
+
+                {/* Mobile logout */}
+                <button
+                    onClick={signOut}
+                    className="md:hidden nav-item text-red-400 hover:text-red-600 mt-auto"
+                    title="Cerrar sesión"
+                >
+                    <LogOut className="w-6 h-6" />
+                    <span className="text-[10px] font-bold mt-1">SALIR</span>
+                </button>
             </nav>
             <main className="main-content">
                 <header className="md:hidden flex items-center justify-between mb-6">
