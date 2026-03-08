@@ -12,6 +12,7 @@ interface Consulta {
     diagnosis_prob?: number;
     diagnosis_label?: string;
     status: string;
+    validation_id?: string;
 }
 
 // Map raw class names to human-readable labels
@@ -75,6 +76,7 @@ export const HistoryPage: React.FC = () => {
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
                                 <th className="p-5">ID / Estado</th>
+                                <th className="p-5">Validación</th>
                                 <th className="p-5">Captura</th>
                                 <th className="p-5">Probabilidad</th>
                                 <th className="p-5">Fecha & Hora</th>
@@ -85,7 +87,7 @@ export const HistoryPage: React.FC = () => {
                         <tbody className="divide-y divide-gray-50">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={6} className="p-10 text-center text-gray-400">
+                                    <td colSpan={7} className="p-10 text-center text-gray-400">
                                         <div className="flex justify-center items-center gap-2">
                                             <Loader2 className="animate-spin w-5 h-5" /> Cargando...
                                         </div>
@@ -93,13 +95,13 @@ export const HistoryPage: React.FC = () => {
                                 </tr>
                             ) : fetchError ? (
                                 <tr>
-                                    <td colSpan={6} className="p-10 text-center text-red-500 font-medium">
+                                    <td colSpan={7} className="p-10 text-center text-red-500 font-medium">
                                         {fetchError}
                                     </td>
                                 </tr>
                             ) : items.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="p-10 text-center text-gray-400">
+                                    <td colSpan={7} className="p-10 text-center text-gray-400">
                                         No hay consultas aún. ¡Subí una imagen para comenzar!
                                     </td>
                                 </tr>
@@ -117,6 +119,15 @@ export const HistoryPage: React.FC = () => {
                                                 {item.status === 'completed' ? 'Completado' : 'Pendiente'}
                                             </span>
                                         </div>
+                                    </td>
+                                    <td className="p-5 align-middle">
+                                        {item.validation_id ? (
+                                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-widest text-blue-800 bg-blue-100 border border-blue-200 transition-all hover:bg-blue-200 hover:shadow-sm" title="Código de validación de laboratorio">
+                                                {item.validation_id}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-400 text-xs italic">N/A</span>
+                                        )}
                                     </td>
                                     <td className="p-5 align-middle">
                                         <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm border border-gray-100 relative group-hover:scale-105 transition-transform">

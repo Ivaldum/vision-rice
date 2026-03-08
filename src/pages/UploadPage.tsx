@@ -23,6 +23,29 @@ export const UploadPage: React.FC = () => {
     const [analysisTimestamp, setAnalysisTimestamp] = useState<string>('');
     const [weather, setWeather] = useState<WeatherData | null>(null);
 
+    // Validation ID logic
+    const [requiresValidation, setRequiresValidation] = useState(false);
+    const [validationId, setValidationId] = useState<string | null>(null);
+
+    const generateValidationId = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // removed O, 0, 1, I for clarity
+        let id = 'VR-';
+        for (let i = 0; i < 6; i++) {
+            id += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return id;
+    };
+
+    const handleValidationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setRequiresValidation(checked);
+        if (checked) {
+            setValidationId(generateValidationId());
+        } else {
+            setValidationId(null);
+        }
+    };
+
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const selectedFile = e.target.files[0];
@@ -111,6 +134,7 @@ export const UploadPage: React.FC = () => {
                         diagnosis_label: result.best_detection?.class?.toLowerCase() === 'pyr' ? 'Pyricularia' : 'No Pyricularia',
                         diagnosis_prob: result.best_detection?.confidence || null,
                         detection_count: result.count,
+                        validation_id: validationId,
                     },
                 ])
                 .select()
@@ -138,6 +162,8 @@ export const UploadPage: React.FC = () => {
         setAnalysisError(null);
         setUploadSuccess(false);
         setShowModal(false);
+        setRequiresValidation(false);
+        setValidationId(null);
         // Do not clear location so it persists for the next upload
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
@@ -158,6 +184,7 @@ export const UploadPage: React.FC = () => {
                     result={analysisResult}
                     location={location}
                     timestamp={analysisTimestamp}
+                    validationId={validationId}
                 />
             )}
 
@@ -259,6 +286,48 @@ export const UploadPage: React.FC = () => {
                             </button>
                         </div>
                     </div>
+
+                    {/* Validation Widget */}
+                    {file && (
+                        <div className={cn(
+                            "glass-panel p-5 rounded-2xl transition-all duration-300 border-2",
+                            requiresValidation ? "border-green-300 bg-green-50/50" : "border-transparent"
+                        )}>
+                            <div className="flex items-start gap-4">
+                                <div className="flex items-center h-6 mt-1">
+                                    <input
+                                        id="validation-checkbox"
+                                        type="checkbox"
+                                        checked={requiresValidation}
+                                        onChange={handleValidationChange}
+                                        disabled={uploading || uploadSuccess}
+                                        className="w-5 h-5 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2 cursor-pointer disabled:opacity-50"
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <label htmlFor="validation-checkbox" className="font-bold text-gray-800 text-base cursor-pointer">
+                                        Solicitar validación de laboratorio
+                                    </label>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        Marcá esta opción si vas a enviar esta misma muestra al laboratorio para contrastar resultados.
+                                    </p>
+
+                                    {requiresValidation && validationId && (
+                                        <div className="mt-4 p-4 bg-white rounded-xl border border-green-200/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 relative overflow-hidden">
+                                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                                            <div>
+                                                <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">Código de muestra</p>
+                                                <p className="text-sm text-gray-600">Anotá este código en en tu muestra y base de datos.</p>
+                                            </div>
+                                            <div className="bg-green-100/50 px-4 py-2 rounded-lg font-mono text-xl font-black text-green-800 tracking-wider">
+                                                {validationId}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Column: Info & Widgets */}

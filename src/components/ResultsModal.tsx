@@ -8,6 +8,7 @@ interface ResultsModalProps {
     result: AnalysisResponse;
     location: { lat: number; lng: number } | null;
     timestamp: string;
+    validationId?: string | null;
 }
 
 // Map class names to human-readable labels
@@ -23,7 +24,8 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({
     onClose,
     result,
     location,
-    timestamp
+    timestamp,
+    validationId
 }) => {
     if (!isOpen) return null;
 
@@ -94,6 +96,18 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({
                                     </p>
                                 </div>
                             </div>
+
+                            {validationId && (
+                                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-3">
+                                    <div>
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Cód. Lab</p>
+                                        <p className="text-sm font-semibold text-gray-800">Cód. Validación</p>
+                                    </div>
+                                    <div className="bg-blue-100/80 px-4 py-1.5 rounded-lg border border-blue-200">
+                                        <p className="font-mono font-black text-lg text-blue-800 tracking-widest">{validationId}</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
