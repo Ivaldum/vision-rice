@@ -95,7 +95,7 @@ export const UploadPage: React.FC = () => {
     };
 
     const handleUpload = async () => {
-        if (!file || !location) return;
+        if (!file) return;
         setUploading(true);
         setAnalysisError(null);
 
@@ -127,8 +127,8 @@ export const UploadPage: React.FC = () => {
                 .insert([
                     {
                         image_url: publicUrl,
-                        latitude: location.lat,
-                        longitude: location.lng,
+                        latitude: location?.lat ?? null,
+                        longitude: location?.lng ?? null,
                         status: 'completed',
                         created_at: timestamp,
                         diagnosis_label: result.best_detection?.class?.toLowerCase() === 'pyr' ? 'Pyricularia' : 'No Pyricularia',
@@ -274,11 +274,11 @@ export const UploadPage: React.FC = () => {
                         <div className="w-full md:w-auto">
                             <button
                                 onClick={handleUpload}
-                                disabled={!file || !location || uploading || uploadSuccess}
+                                disabled={!file || uploading || uploadSuccess}
                                 className={cn(
                                     "w-full md:w-auto px-8 py-3 rounded-xl font-bold uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 transition-all",
                                     uploadSuccess ? "bg-green-500 text-white" :
-                                        (!file || !location) ? "bg-gray-200 text-gray-400 cursor-not-allowed" :
+                                        (!file) ? "bg-gray-200 text-gray-400 cursor-not-allowed" :
                                             "btn-primary hover:px-10"
                                 )}
                             >
